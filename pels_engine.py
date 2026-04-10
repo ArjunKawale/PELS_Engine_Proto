@@ -72,7 +72,7 @@ Evaluate the prompt using the following criteria. Assign an integer score from 1
 </scoring_rubric>
 
 <scoring_rules>
-1.  **Evaluate Only the Prompt:** You are evaluating the quality of the *prompt itself*, not generating a response to the prompt.
+1.  **Evaluate Only the Prompt:** You are evaluating the quality of the *prompt itself* in the context of the requested task, not generating a response to the prompt.
 2.  **No Extrapolation:** Score based solely on the text provided. Do not assume the user's intent if it is not explicitly written.
 3.  **Output Specification:** C3 strictly measures Output Specification, NOT iterative refinement.
 </scoring_rules>
@@ -115,9 +115,9 @@ def retrieve_context(student_prompt: str, n_results: int = 3) -> str:
     
     return context_str
 
-def evaluate_prompt(student_prompt: str) -> dict:
+def evaluate_prompt(task_description: str, student_prompt: str) -> dict:
     """The main entry point. Retrieves context, calls Gemini, calculates final score."""
-    # 1. Get RAG Context
+    # 1. Get RAG Context (We still search using the student's prompt to find similar patterns)
     historical_examples = retrieve_context(student_prompt)
     
     # 2. Assemble the payload
@@ -130,6 +130,9 @@ def evaluate_prompt(student_prompt: str) -> dict:
     </calibration_examples>
     
     <student_submission>
+    TARGET TASK: 
+    "{task_description}"
+
     STUDENT PROMPT TO SCORE:
     "{student_prompt}"
     </student_submission>
@@ -178,6 +181,9 @@ def evaluate_prompt(student_prompt: str) -> dict:
 # Optional: Add a simple test block that only runs if you execute this file directly
 if __name__ == "__main__":
     print("\nRunning a quick test...\n")
-    test_input = "Act as a software engineer. Review my react code."
-    result = evaluate_prompt(test_input)
+    test_task = "Write a prompt to ask an AI to help you debug a React component."
+    test_prompt = "Act as a software engineer. Review my react code."
+    
+    # Notice we now pass BOTH the task and the prompt
+    result = evaluate_prompt(test_task, test_prompt)
     print(json.dumps(result, indent=4))
