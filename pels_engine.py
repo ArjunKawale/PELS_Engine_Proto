@@ -83,8 +83,15 @@ Score C1-C6 (1-10 integers) using this condensed rubric:
 * C5 Ethics (15%): 1-3: Unaware. 4-7: Avoids obvious harm. 8-10: Proactive ethical constraints.
 * C6 Meta (10%): 1-3: Overconfident. 4-7: Flags uncertainty. 8-10: Explicit self-check/limitations.
 
-Evaluate purely on the text. Provide scores for each submission and one overall summary.
+Evaluate purely on the text and relation to task. Provide scores for each submission and one overall summary.
+IMPORTANT:
+The provided reference examples are approximate and retrieved via semantic similarity.
+They may not exactly match the task or intent.
 
+Use them only as rough indicators of quality levels (weak, developing, strong),
+NOT as strict calibration targets.
+
+Prioritize evaluating the student prompt independently based on the rubric.
 CRITICAL: Respond with ONLY a valid JSON object. No markdown, no explanation before or after.
 Output format:
 {
@@ -276,15 +283,56 @@ def evaluate_batch(qa_pairs: list, token_limit: int = 3000) -> dict:
 # ==========================================
 if __name__ == "__main__":
     test_batch = [
-        {
-            "task": "Transition from software development to product management with a strong resume",
-            "prompt": "You are a senior career coach with 10 years of experience in the IT industry. I am a mid-level software developer looking to transition to a product management role. Write a detailed resume highlighting my technical and leadership skills. Include specific metrics and achievements. Ensure the resume is ATS-friendly and tailored for product management roles."
-        },
-        {
-            "task": "Apply for a project manager job with a professional cover letter",
-            "prompt": "You are a recruiter. Write a cover letter for a project manager position."
-        }
-    ]
+    {
+        "task": "Get advanced guidance for a successful tech job search",
+        "prompt": "You are a career counselor. Give me advanced tips for a successful job search in the competitive tech industry. Include strategies for networking, tailoring applications, leveraging referrals, and preparing for technical and behavioral interviews. Also, provide tips on how to follow up after interviews and negotiate job offers."
+    },  # STRONG
+
+    {
+        "task": "Ask manager for a promotion professionally",
+        "prompt": "how to ask for promotion"
+    },  # WEAK
+
+    {
+        "task": "Improve and optimize resume for job applications",
+        "prompt": "You are an experienced resume coach. Polish my resume for a software engineering role. Improve clarity, impact, and ATS optimization. Use strong action verbs and quantify achievements where possible."
+    },  # DEVELOPING
+
+    {
+        "task": "Prepare thoroughly for job interviews",
+        "prompt": "prepare me for an interview"
+    },  # WEAK
+
+    {
+        "task": "Write a tailored cover letter for a job application",
+        "prompt": "You are a hiring manager. Help me write a compelling cover letter for a job application. Tailor it to the role, highlight relevant skills, and keep it concise and professional."
+    },  # DEVELOPING
+
+    {
+        "task": "Understand what to say during interviews",
+        "prompt": "what should I say in an interview"
+    },  # WEAK
+
+    {
+        "task": "Create a professional bio for online profile",
+        "prompt": "Give me a good bio for my profile"
+    },  # WEAK
+
+    {
+        "task": "Draft a formal professional email",
+        "prompt": "You are a corporate communication expert. Write a professional email for workplace communication. Ensure clarity, proper tone, and concise structure."
+    },  # DEVELOPING
+
+    {
+        "task": "Determine appropriate salary expectations",
+        "prompt": "what is a good salary to ask for"
+    },  # WEAK
+
+    {
+        "task": "Negotiate salary effectively with employer",
+        "prompt": "You are a negotiation expert. Help me negotiate salary for a job offer. Provide strategies, sample phrases, and tips to maximize compensation while maintaining professionalism."
+    }  # STRONG
+]
 
     result = evaluate_batch(test_batch)
 
