@@ -1,0 +1,12 @@
+[Log ID: 0001] 21:49:34 | INFO | Loading Vector DB from: Database\pels_vector_db
+[Log ID: 0002] 21:49:45 | INFO | ✅ AI Engine Initialized.
+[Log ID: 0001] 21:50:47 | INFO | Loading Vector DB from: Database\pels_vector_db
+[Log ID: 0002] 21:51:18 | INFO | ✅ AI Engine Initialized.
+[Log ID: 0003] 21:51:18 | INFO | Preparing batch of 2 submissions...
+[Log ID: 0004] 21:51:18 | INFO | 🔎 [RAG] ID 1 context retrieved: Scores: C1:10 | C2:7 | C3:7 | C4:9 | C5:7 | C6:10 -> Justification: Multiple techniques composed deliberately, fully adapted to domain. Prompt: 'You are a senior career coach with 10 years of experience in the IT industry. I am a mid-level software developer looking to transition to a product management role. Write a detailed resume highlighting my technical and leadership skills. Include specific metrics and achievements. Ensure the resume is ATS-friendly and tailored for product management roles.'
+[Log ID: 0005] 21:51:18 | INFO | 🔎 [RAG] ID 2 context retrieved: Scores: C1:7 | C2:5 | C3:6 | C4:7 | C5:4 | C6:6 -> Justification: Some structure and one technique used, but not matched to task need. Prompt: 'You are a recruiter. Write a cover letter for a project manager position.'
+[Log ID: 0006] 21:51:18 | INFO | 📏 Pre-flight Check: ~774 estimated input tokens.
+[Log ID: 0007] 21:51:18 | INFO | 🚀 Token count safe. Sending batch to Claude Haiku 4.5...
+[Log ID: 0008] 21:51:21 | INFO | ✅ Response received successfully.
+[Log ID: 0009] 21:51:21 | INFO | 📊 Usage | In: 838 | Out: 277 | Cache Write: 0 | Cache Read: 0 | Est. Cost: $0.002223
+[Log ID: 0010] 21:51:21 | INFO | ✅ Batch processing and scoring complete.
