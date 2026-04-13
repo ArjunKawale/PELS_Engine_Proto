@@ -28,7 +28,7 @@ llm_model = genai.GenerativeModel('gemini-2.5-flash', generation_config=generati
 # 3. Vector DB Initialization
 # ==========================================
 # Using your exact absolute path
-DB_PATH = r"D:/PROJECTS/PELS2/Database/pels_vector_db"
+DB_PATH = r"Database\pels_vector_db"
 
 print(f"Loading Vector DB from: {DB_PATH}")
 chroma_client = chromadb.PersistentClient(path=DB_PATH)
@@ -120,6 +120,10 @@ def evaluate_prompt(task_description: str, student_prompt: str) -> dict:
     # 1. Get RAG Context (We still search using the student's prompt to find similar patterns)
     historical_examples = retrieve_context(student_prompt)
     
+    print("\n" + "="*50)
+    print("RETRIEVED CONTEXT FOR CALIBRATION:")
+    print(historical_examples if historical_examples.strip() else "No matching historical examples found.")
+    print("="*50 + "\n")
     # 2. Assemble the payload
     full_prompt = f"""
     {PELS_SYSTEM_PROMPT}
@@ -181,8 +185,10 @@ def evaluate_prompt(task_description: str, student_prompt: str) -> dict:
 # Optional: Add a simple test block that only runs if you execute this file directly
 if __name__ == "__main__":
     print("\nRunning a quick test...\n")
-    test_task = "Write a prompt to ask an AI to help you debug a React component."
-    test_prompt = "Act as a software engineer. Review my react code."
+    test_task = "Write a prompt to improve your productivity at work."
+
+    test_prompt = "how to be productive at work"
+
     
     # Notice we now pass BOTH the task and the prompt
     result = evaluate_prompt(test_task, test_prompt)
