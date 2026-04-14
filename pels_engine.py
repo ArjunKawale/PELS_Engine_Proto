@@ -7,6 +7,7 @@ import anthropic
 from sentence_transformers import SentenceTransformer
 from dotenv import load_dotenv
 
+DB_PATH = os.getenv("CHROMA_DB_PATH", "Database/pels_vector_db")
 # ==========================================
 # 0. Logging Configuration
 # ==========================================
@@ -25,9 +26,8 @@ class SequentialIDFilter(logging.Filter):
 logger = logging.getLogger("PELSEngine")
 logger.setLevel(logging.INFO)
 
-# Define Handlers (File and Console)
+# Define Handlers (File Only)
 file_handler = logging.FileHandler("pels_engine.log", encoding="utf-8")
-console_handler = logging.StreamHandler()
 
 # Define the format including the dynamic %(log_id)s
 formatter = logging.Formatter(
@@ -36,13 +36,11 @@ formatter = logging.Formatter(
 )
 
 file_handler.setFormatter(formatter)
-console_handler.setFormatter(formatter)
 
 # Attach filter and handlers to the logger
 seq_filter = SequentialIDFilter()
 logger.addFilter(seq_filter)
 logger.addHandler(file_handler)
-logger.addHandler(console_handler)
 logger.propagate = False # Prevents duplicate logs if other libraries use root logger
 
 # ==========================================
@@ -62,7 +60,6 @@ MODEL = "claude-haiku-4-5-20251001"
 # ==========================================
 # 2. Vector DB Initialization
 # ==========================================
-DB_PATH = r"Database\pels_vector_db"
 
 logger.info(f"Loading Vector DB from: {DB_PATH}")
 chroma_client = chromadb.PersistentClient(path=DB_PATH)

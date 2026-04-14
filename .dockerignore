@@ -1,0 +1,17 @@
+# Ignore Environment Variables
+.env
+
+# Ignore Logs
+*.log
+pels_engine.log
+
+# Ignore Python Cache
+__pycache__/
+*.pyc
+
+Database/Trinetri Datsets/
+models/
+
+# Ignore Git files
+.git/
+.gitignore

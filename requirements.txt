@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+chromadb
+anthropic
+numpy<2.0.0
+sentence-transformers
+python-dotenv
+pydantic
