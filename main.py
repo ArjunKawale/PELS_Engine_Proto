@@ -1,5 +1,6 @@
 import time
-from fastapi import FastAPI, HTTPException, Depends
+import os
+from fastapi import FastAPI, HTTPException, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List
@@ -18,34 +19,38 @@ app.add_middleware(
 )
 
 # ==========================================
-# 1. Global Rate Limiter Logic
+# 1. API Key Verification
 # ==========================================
-# This list will store the timestamps of recent requests
+API_KEY = os.getenv("API_KEY")
+
+def verify_api_key(x_api_key: str = Header(...)):
+    """
+    Checks for a valid API key in the 'x-api-key' request header.
+    Raises 403 if missing or incorrect.
+    """
+    if not API_KEY:
+        raise HTTPException(status_code=500, detail="Server misconfiguration: API_KEY not set.")
+    if x_api_key != API_KEY:
+        raise HTTPException(status_code=403, detail="Forbidden: Invalid API key.")
+
+# ==========================================
+# 2. Global Rate Limiter Logic
+# ==========================================
 request_timestamps = []
 
 def rate_limiter():
-    """
-    Ensures no more than 30 requests are processed per minute globally.
-    If the limit is exceeded, immediately returns a 429 error.
-    """
     global request_timestamps
     current_time = time.time()
-    
-    # 1. Clean up old timestamps (remove anything older than 60 seconds)
     request_timestamps = [t for t in request_timestamps if current_time - t < 60]
-    
-    # 2. Check if we have hit the 30 request limit
     if len(request_timestamps) >= 30:
         raise HTTPException(
             status_code=429, 
             detail="Server rate limit exceeded (30 requests/minute). Please wait 60 seconds and try again."
         )
-    
-    # 3. If safe, log this request's timestamp and allow it to pass
     request_timestamps.append(current_time)
 
 # ==========================================
-# 2. Pydantic Models for Batching
+# 3. Pydantic Models for Batching
 # ==========================================
 class QAPair(BaseModel):
     task: str
@@ -55,41 +60,32 @@ class BatchSubmission(BaseModel):
     qa_pairs: List[QAPair]
 
 # ==========================================
-# 3. Evaluation Endpoint
+# 4. Evaluation Endpoint
 # ==========================================
-# We inject the rate_limiter() function as a Dependency here.
-# FastAPI will run the rate limiter BEFORE it even looks at the payload.
-@app.post("/evaluate", dependencies=[Depends(rate_limiter)])
+@app.post("/evaluate", dependencies=[Depends(verify_api_key), Depends(rate_limiter)])
 def evaluate_batch_endpoint(submission: BatchSubmission):
     try:
-        # Convert the Pydantic objects into a simple list of dictionaries 
         dict_pairs = [{"task": pair.task, "prompt": pair.prompt} for pair in submission.qa_pairs]
 
-        # Call the batch engine
         result = pels_engine.evaluate_batch(
             qa_pairs=dict_pairs,
-            token_limit=3000 # Your safety limit
+            token_limit=3000
         )
         
-        # Check if the engine caught an error or hit the token safety abort
         if "error" in result:
             if "SAFETY ABORT" in result["error"]:
-                # 413 Payload Too Large
                 raise HTTPException(status_code=413, detail=result) 
-            # 500 Internal Server Error
             raise HTTPException(status_code=500, detail=result["error"])
             
         return result
         
     except HTTPException:
-        # Re-raise HTTP exceptions so they don't get caught by the broad except below
         raise
     except Exception as e:
-        # Catch any unexpected server/python errors
         raise HTTPException(status_code=500, detail=f"Server fault: {str(e)}")
 
 # ==========================================
-# 4. Health Check
+# 5. Health Check (no auth needed)
 # ==========================================
 @app.get("/")
 def root():
