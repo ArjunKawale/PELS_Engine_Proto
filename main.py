@@ -69,7 +69,7 @@ def evaluate_batch_endpoint(submission: BatchSubmission):
 
         result = pels_engine.evaluate_batch(
             qa_pairs=dict_pairs,
-            token_limit=3000
+            token_limit=4000
         )
         
         if "error" in result:

@@ -199,7 +199,7 @@ def estimate_input_tokens(system_text: str, user_text: str) -> int:
 # ==========================================
 # 5. Main Evaluation Function
 # ==========================================
-def evaluate_batch(qa_pairs: list, token_limit: int = 3000) -> dict:
+def evaluate_batch(qa_pairs: list, token_limit: int = 4000) -> dict:
     """Single API call evaluates up to 10 task/prompt pairs with a pre-flight token check."""
     
     logger.info(f"Preparing batch of {len(qa_pairs)} submissions...")
@@ -229,7 +229,7 @@ def evaluate_batch(qa_pairs: list, token_limit: int = 3000) -> dict:
 
         response = client.messages.create(
             model=MODEL,
-            max_tokens=1024,
+            max_tokens=2048,
             system=[
                 {
                     "type": "text",
